@@ -1,0 +1,10 @@
+vlan 10
+name VENTAS
+exit
+vlan 20
+name RRHH
+exit
+vlan 30
+name TI
+exit 
+! configuracion de vlans creadas
