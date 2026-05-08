@@ -20,4 +20,4 @@ Como primer paso se crea el repositorio de GitHub y lo vinculamos con el Visual 
 ## Justificación de Parámetros del Modelo
 (por completar)
 ## Limitaciones Conocidas
-(por completar)
+(por completar
