@@ -12,7 +12,6 @@ if not api_key:
 
 client = Groq(api_key=api_key)
 
-# SYSTEM PROMPT DEFINITIVO (Cumple Ítem 6 y 2.1 de la pauta) [cite: 17, 52]
 SYSTEM_PROMPT = (
     "ACT AS A CISCO IOS CONFIGURATION ENGINE. "
     "OUTPUT ONLY VALID COMMANDS. "
@@ -25,7 +24,6 @@ SYSTEM_PROMPT = (
 )
 
 def generar_configuracion(escenario, descripcion):
-    """Generación con los valores exactos de la pauta """
     try:
         completion = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
@@ -33,29 +31,28 @@ def generar_configuracion(escenario, descripcion):
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": descripcion}
             ],
-            temperature=0.1,  # Exigencia pauta: <= 0.2 [cite: 34]
-            max_tokens=1024, # Exigencia pauta: >= 800 [cite: 34]
-            stream=True      # Exigencia pauta: Streaming [cite: 27]
+            temperature=0.1,
+            max_tokens=1024,
+            stream=True
         )
 
         print(f"\n! --- INICIO CONFIGURACIÓN {escenario} ---")
         full_config = ""
-        
+
         for chunk in completion:
             content = chunk.choices[0].delta.content
             if content:
                 print(content, end="")
                 full_config += content
-        
-        # Guardado automático en /configs/ [cite: 30]
+
         if not os.path.exists('configs'):
             os.makedirs('configs')
-        
+
         timestamp = int(time.time())
         filename = f"configs/escenario_{escenario}_{timestamp}.txt"
         with open(filename, "w") as f:
             f.write(full_config)
-            
+
         print(f"\n! --- FIN (Archivo: {filename}) ---")
 
     except Exception as e:
@@ -63,11 +60,38 @@ def generar_configuracion(escenario, descripcion):
 
 def main():
     print("CISCO GENERATOR V1.0 - INACAP LA SERENA")
-    print("A. VLAN | B. OSPF | C. SUBNET")
+    print("A. VLAN | B. OSPF | C. SUBNET | D. ACL")
     op = input("\nElija Escenario: ").upper()
-    if op in ['A', 'B', 'C']:
-        desc = input("Detalles del escenario: ")
+
+    if op == 'A':
+        desc = input("Detalles del escenario (VLANs, puertos, trunk): ")
+        generar_configuracion(op, f"Genera configuracion de VLANs y trunking para switch capa 2. {desc}")
+
+    elif op == 'B':
+        desc = input("Detalles del escenario (proceso, redes, area): ")
+        generar_configuracion(op, f"Genera configuracion OSPF para router Cisco IOS. {desc}")
+
+    elif op == 'C':
+        desc = input("Detalles del escenario (red base, prefijo, subredes): ")
+        generar_configuracion(op, f"Genera subnetting y asignacion de IPs a interfaces Cisco IOS. {desc}")
+
+    elif op == 'D':
+        print("\n--- Escenario D: ACL (Lista de Control de Acceso) ---")
+        red_origen  = input("Red de origen a controlar (ej: 192.168.10.0/24): ")
+        red_destino = input("Red de destino (ej: 10.0.0.0/8 o 'any'): ")
+        accion      = input("Accion (permit/deny): ").lower()
+        interfaz    = input("Interfaz donde aplicar la ACL (ej: GigabitEthernet0/1): ")
+        direccion   = input("Direccion (in/out): ").lower()
+        desc = (
+            f"Genera una ACL extendida en Cisco IOS. "
+            f"Accion: {accion} trafico desde {red_origen} hacia {red_destino}. "
+            f"Permitir el resto del trafico. "
+            f"Aplicar la ACL en la interfaz {interfaz} direccion {direccion}."
+        )
         generar_configuracion(op, desc)
+
+    else:
+        print("! Opcion invalida. Elija A, B, C o D.")
 
 if __name__ == "__main__":
     main()
