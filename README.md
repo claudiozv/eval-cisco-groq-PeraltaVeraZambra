@@ -15,20 +15,32 @@ Este proyecto consiste en una aplicación de consola en Python, nombrada `cisco_
 - Cuenta en [Groq] con API Key activa
 - Git instalado
 ## Instrucciones de Instalación
-1.- Clonar el reositorio 
+1.- Clonar el rep ositorio 
 2.- Crear y activar el entorno virtual
 3.- Instalar dependenicas
 4.- Configurar API Key
 5.- Ejecutar la aplicacion 
 ## Escenarios y Funciones
+
 * **Escenario A (VLANs y Trunking):** El usuario ingresa una lista de VLANs con sus nombres y los puertos asignados para configurar un switch de capa 2.
 * **Escenario B (OSPF):** El usuario proporciona el ID del proceso de enrutamiento, las redes que se desean anunciar y las áreas correspondientes para configurar un router.
 * **Escenario C (Subnetting e IP):** El usuario define una red base, un prefijo y la cantidad de subredes necesarias para asignar direcciones IP a las interfaces.
 * Todas las salidas generadas se almacenan automáticamente en la carpeta `/configs/` utilizando la nomenclatura `escenario_{tipo}_{timestamp}.txt`.
-* **Escenario D (a definir):**
+* **Escenario D (Access):**
 ## Justificación de Parámetros del Modelo
-(por completar)
+
+**Model: llama-3.3-70b-versatile** **¿Por qué?**
+Se utilizo este modelo porque genera comandos Cisco IOS más precisos y completos.
+**Temperature: 0.1 ¿Por qué?**
+La temperatura controla qué tan "creativo" o "aleatorio" es el modelo al generar texto, al estar en 0.1 nos entregara comandos mas tecnicos.
+**Max_tokens: 1024 ¿Por qué?**
+Escogimos esta cantidad para dejar el margen suficiente para todos los escenarios del proyecto.
+**Stream: True ¿Por qué?** 
+Esto hace que la respuesta se vaya viendo paso a paso como se va creando y no aparece un mensaje de golpe con todo el comando.
+
 ## Limitaciones Conocidas
+- La carpeta `/configs/` se acumula con cada ejecución y debe limpiarse manualmente.
+- La entrada del usuario es texto libre, no validamos rangos antes de enviar a la API.
 
 *Evaluación Práctica · Generador Cisco con Groq · INACAP La Serena · 2026*
 
